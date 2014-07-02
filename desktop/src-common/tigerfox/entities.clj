@@ -14,11 +14,11 @@
         dest-y (:y destination)
         dif-x (- dest-x x)
         dif-y (- dest-y y)
-        h2 (math/sqrt (+ (math/expt dif-x 2)
-                         (math/expt dif-y 2)))]
-    (if (< speed h2)
-      (let [dx (* speed (double (/ dif-x h2)))
-            dy (* speed (double (/ dif-y h2)))]
+        hypotenuse (math/sqrt (+ (math/expt dif-x 2)
+                                 (math/expt dif-y 2)))]
+    (if (< speed hypotenuse)
+      (let [dx (double (* speed (/ dif-x hypotenuse)))
+            dy (double (* speed (/ dif-y hypotenuse)))]
         [dx dy])
       [0 0])))
 
