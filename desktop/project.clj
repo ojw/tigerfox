@@ -12,6 +12,9 @@
                  [com.badlogicgames.gdx/gdx-platform "1.2.0"
                   :classifier "natives-desktop"]
                  [org.clojure/clojure "1.6.0"]
+                 [org.clojure/data.priority-map "0.0.5"]
+                 [org.clojure/math.numeric-tower "0.0.4"]
+                 [org.clojure/algo.generic "0.1.2"]
                  [play-clj "0.3.8"]]
   
   :source-paths ["src" "src-common"]
