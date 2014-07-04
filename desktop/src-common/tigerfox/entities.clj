@@ -6,10 +6,10 @@
 
 (defn player []
   (assoc (texture "player.png")
-    :x -100
-    :y -100
-    :destination {:x 0 :y 0}
-    :speed 5))
+    :x 100
+    :y 100
+    :destination {:x 100 :y 100}
+    :speed 8))
 
 (defn move-vector [{:keys [x y destination speed] :as entity}]
   (let [dest-x (:x destination)
@@ -24,7 +24,6 @@
         [dx dy])
       [0 0])))
 
-
 (defn test-position [screen entity]
   (if-let [cell  (-> screen
                      (tiled-map-layer "Tile Layer 1")
@@ -36,7 +35,6 @@
         (zero? (Integer/parseInt prop))
         true))
     true))
-    
 
 (defn move [screen entity]
   (let [[dx dy]  (move-vector entity)

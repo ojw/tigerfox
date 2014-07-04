@@ -58,7 +58,20 @@
   (fn [{:keys [input-x input-y] :as screen} [entities]]
     (let [{:keys [x y]} (input->screen screen input-x input-y)
           new-entities (assoc-in entities [:player :destination] {:x x :y y})]
-      [new-entities])))
+      [new-entities]))
+
+  :on-key-down
+  (fn [screen entities]
+    (let [position (position screen)
+          old-x (x screen)
+          old-y (y screen)
+          old-z (z screen)]
+      (condp = (:key screen)
+        (key-code :w) (y! screen (+ old-y 10))
+        (key-code :a) (x! screen (- old-x 10))
+        (key-code :s) (y! screen (- old-y 10))
+        (key-code :d) (x! screen (+ old-x 10))
+        nil))))
 
 (defgame tigerfox
   :on-create
