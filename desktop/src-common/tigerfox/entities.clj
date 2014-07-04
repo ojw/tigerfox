@@ -1,12 +1,14 @@
 (ns tigerfox.entities
   (:require [play-clj.g2d :refer :all]
+            [play-clj.core :refer :all]
+            [play-clj.ui :refer :all]
             [clojure.math.numeric-tower :as math]))
 
 (defn player []
   (assoc (texture "player.png")
-    :x 100
-    :y 100
-    :destination {:x 200 :y 400}
+    :x -100
+    :y -100
+    :destination {:x 0 :y 0}
     :speed 5))
 
 (defn move-vector [{:keys [x y destination speed] :as entity}]
@@ -22,11 +24,36 @@
         [dx dy])
       [0 0])))
 
-(defn move [entity]
-  (let [[dx dy]  (move-vector entity)]
-    (-> entity
-        (update-in [:x] (partial + dx))
-        (update-in [:y] (partial + dy)))))
 
-(defn tick [entity]
-  (move entity))
+(defn test-position [screen entity]
+;  (let [layer (tiled-map-layer screen "Tile Layer 1")
+;        cell (tiled-map-cell layer (:x entity) (:y entity))
+;        tile (.getTile cell)]
+  (if-let [cell  (-> screen
+                     (tiled-map-layer "Tile Layer 1")
+                     (tiled-map-cell (:x (screen->isometric screen entity)) (:y (screen->isometric screen entity))))]
+    (let [tile (.getTile cell)
+          props (.getProperties tile)]
+      ;(println (.getId tile))
+      false)
+;    (-> tile
+;        (.getTile)
+;        (.getProperties)
+;        (.get "blocking")
+;        zero?)
+    true)
+
+  )
+    
+
+(defn move [screen entity]
+  (let [[dx dy]  (move-vector entity)
+        new-entity (-> entity
+                       (update-in [:x] (partial + dx))
+                       (update-in [:y] (partial + dy)))]
+    (if (test-position screen new-entity)
+      new-entity
+      entity)))
+
+(defn tick [screen entity]
+  (move screen entity))
