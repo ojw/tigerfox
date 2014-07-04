@@ -26,24 +26,16 @@
 
 
 (defn test-position [screen entity]
-;  (let [layer (tiled-map-layer screen "Tile Layer 1")
-;        cell (tiled-map-cell layer (:x entity) (:y entity))
-;        tile (.getTile cell)]
   (if-let [cell  (-> screen
                      (tiled-map-layer "Tile Layer 1")
                      (tiled-map-cell (:x (screen->isometric screen entity)) (:y (screen->isometric screen entity))))]
     (let [tile (.getTile cell)
-          props (.getProperties tile)]
-      ;(println (.getId tile))
-      false)
-;    (-> tile
-;        (.getTile)
-;        (.getProperties)
-;        (.get "blocking")
-;        zero?)
-    true)
-
-  )
+          props (.getProperties tile)
+          prop (.get props "blocking")]
+      (if prop
+        (zero? (Integer/parseInt prop))
+        true))
+    true))
     
 
 (defn move [screen entity]

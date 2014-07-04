@@ -30,8 +30,7 @@
 
   :on-update-position
   (fn [{:keys [entity] :as screen} entities]
-    (label (str (int (:x entity)) ", " (int (:y entity))) (color :blue)))
-  )
+    (label (str (int (:x entity)) ", " (int (:y entity))) (color :blue))))
 
 (defscreen main-screen
 
