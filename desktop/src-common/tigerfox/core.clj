@@ -2,6 +2,7 @@
   (:require [play-clj.core :refer :all]
             [play-clj.ui :refer :all]
             [play-clj.g2d :refer :all]
+            [play-clj.math :refer :all]
             [tigerfox.entities :refer :all]
             [clojure.data.priority-map :as pm]
             [clojure.algo.generic.functor :refer :all]))
@@ -32,13 +33,36 @@
   (fn [{:keys [entity] :as screen} entities]
     (label (str (int (:x entity)) ", " (int (:y entity))) (color :blue))))
 
+(defn add-down-key [screen key]
+  (let [down-keys (:down-keys screen)
+        new-down-keys (conj down-keys key)]
+    (update! screen :down-keys new-down-keys)))
+
+(defn remove-down-key [screen key]
+  (let [down-keys (:down-keys screen)
+        new-down-keys (disj down-keys key)]
+    (update! screen :down-keys new-down-keys)))
+
+(defn process-keys [screen]
+  (let [keys (:down-keys screen)]
+    (let [position (position screen)
+          old-x (x screen)
+          old-y (y screen)
+          old-z (z screen)]
+      (if (contains? keys (key-code :w)) (y! screen (+ old-y 10)))
+      (if (contains? keys (key-code :a)) (x! screen (- old-x 10)))
+      (if (contains? keys (key-code :s)) (y! screen (- old-y 10)))
+      (if (contains? keys (key-code :d)) (x! screen (+ old-x 10)))
+      nil)))
+
 (defscreen main-screen
 
   :on-show
   (fn [screen entities]
     (update! screen 
-             :renderer (isometric-tiled-map "map.tmx" 1)
-             :camera (orthographic))
+             :renderer (isometric-tiled-map "map.tmx" 1.5)
+             :camera (orthographic :translate (vector-3 100 100 0))
+             :down-keys #{})
     [(pm/priority-map-keyfn :y :player (player))])
   
   :on-render
@@ -48,6 +72,7 @@
       (clear!)
       (render-entity-map! screen new-entities)
       (run! informational :on-update-position :entity player)
+      (process-keys screen)
       [new-entities]))
 
   :on-resize
@@ -62,16 +87,15 @@
 
   :on-key-down
   (fn [screen entities]
-    (let [position (position screen)
-          old-x (x screen)
-          old-y (y screen)
-          old-z (z screen)]
-      (condp = (:key screen)
-        (key-code :w) (y! screen (+ old-y 10))
-        (key-code :a) (x! screen (- old-x 10))
-        (key-code :s) (y! screen (- old-y 10))
-        (key-code :d) (x! screen (+ old-x 10))
-        nil))))
+    (add-down-key screen (:key screen))
+    nil)
+
+  :on-key-up
+  (fn [screen entities]
+    (remove-down-key screen (:key screen))
+    nil)
+)
+
 
 (defgame tigerfox
   :on-create

@@ -6,9 +6,9 @@
 
 (defn player []
   (assoc (texture "player.png")
-    :x 100
-    :y 100
-    :destination {:x 100 :y 100}
+    :x 200
+    :y 200
+    :destination {:x 200 :y 200}
     :speed 8))
 
 (defn move-vector [{:keys [x y destination speed] :as entity}]
