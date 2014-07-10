@@ -10,9 +10,11 @@
 (declare main-screen informational)
 
 (defn render-entity-map! [screen entity-map]
+  (render-map! screen :with "background")
   (->> entity-map
        vals
-       (render-sorted! screen ["Tile Layer 1"])))
+       (map shift-x)
+       (render-sorted! screen ["walls"])))
 
 (defscreen informational
 
@@ -60,8 +62,8 @@
   :on-show
   (fn [screen entities]
     (update! screen 
-             :renderer (isometric-tiled-map "map.tmx" 1.5)
-             :camera (orthographic :translate (vector-3 100 100 0))
+             :renderer (isometric-tiled-map "map2.tmx" 1)
+             :camera (orthographic :translate (vector-3 300 100 0))
              :down-keys #{})
     [(pm/priority-map-keyfn :y :player (player))])
   

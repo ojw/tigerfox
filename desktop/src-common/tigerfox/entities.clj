@@ -6,10 +6,14 @@
 
 (defn player []
   (assoc (texture "player.png")
-    :x 200
+    :x 600
     :y 200
-    :destination {:x 200 :y 200}
+    :destination {:x 600 :y 200}
     :speed 8))
+
+(defn shift-x [{:keys [x] :as entity}]
+  (assoc entity :x (- x 32)))
+  
 
 (defn move-vector [{:keys [x y destination speed] :as entity}]
   (let [dest-x (:x destination)
@@ -24,17 +28,23 @@
         [dx dy])
       [0 0])))
 
+(defn test-layer [screen entity layer]
+  (let [x (:x (screen->isometric screen entity))
+        y (:y (screen->isometric screen entity))]
+    (if-let [cell  (-> screen
+                       (tiled-map-layer layer)
+                       (tiled-map-cell x y))]
+      (let [tile (.getTile cell)
+            props (.getProperties tile)
+            prop (.get props "blocking")]
+        (if prop
+          (zero? (Integer/parseInt prop))
+          true))
+      true)))
+
 (defn test-position [screen entity]
-  (if-let [cell  (-> screen
-                     (tiled-map-layer "Tile Layer 1")
-                     (tiled-map-cell (:x (screen->isometric screen entity)) (:y (screen->isometric screen entity))))]
-    (let [tile (.getTile cell)
-          props (.getProperties tile)
-          prop (.get props "blocking")]
-      (if prop
-        (zero? (Integer/parseInt prop))
-        true))
-    true))
+  (every? (partial test-layer screen entity) (tiled-map! screen :get-layers)))
+  ;(test-layer screen entity "walls"))
 
 (defn move [screen entity]
   (let [[dx dy]  (move-vector entity)
